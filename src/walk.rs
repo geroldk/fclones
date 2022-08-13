@@ -8,7 +8,6 @@ use dashmap::DashSet;
 use ignore::gitignore::{Gitignore, GitignoreBuilder};
 use rayon::Scope;
 
-use crate::file::FileId;
 use crate::log::Log;
 use crate::path::Path;
 use crate::selector::PathSelector;
@@ -143,10 +142,6 @@ pub struct Walk<'a> {
     pub on_visit: &'a (dyn Fn(&Path) + Sync + Send),
     /// Warnings about inaccessible files or dirs are logged here, if defined.
     pub log: Option<&'a Log>,
-
-    pub one_file_system_devices: tinyset::Set64<u64>,
-
-    pub one_file_system: bool,
 }
 
 /// Private shared state scoped to a single `run` invocation.
@@ -169,8 +164,6 @@ impl<'a> Walk<'a> {
             path_selector: PathSelector::new(base_dir),
             on_visit: &|_| {},
             log: None,
-            one_file_system: false,
-            one_file_system_devices: tinyset::Set64::new(),
         }
     }
 
@@ -335,17 +328,6 @@ impl<'a> Walk<'a> {
         } else {
             gitignore.push(&path, self.log)
         };
-        let p = self.absolute(path.clone());
-        match fs::metadata(&p.to_path_buf()) {
-             Ok(metadata) if self.one_file_system && !self.one_file_system_devices.contains(FileId::from_metadata(&metadata).device)  => {
-             self.log_warn(format!(
-                "Skipping directory {} because not on file system. dev {} devices {:?}",
-                p.display(), FileId::from_metadata(&metadata).device, self.one_file_system_devices
-                
-            )); return;},
-            _ =>  {}
-        };
-       
 
         match fs::read_dir(path.to_path_buf()) {
             Ok(rd) => {

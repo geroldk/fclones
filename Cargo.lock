@@ -370,7 +370,6 @@ dependencies = [
  "sysinfo",
  "tempfile",
  "thread_local",
- "tinyset",
  "typed-sled",
  "uuid",
  "winapi",
@@ -1250,15 +1249,6 @@ checksum = "ca8a50ef2360fbd1eeb0ecd46795a87a19024eb4b53c5dc916ca1fd95fe62438"
 dependencies = [
  "libc",
  "winapi",
-]
-
-[[package]]
-name = "tinyset"
-version = "0.4.11"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d792e2dd65e1cd9baa44c8315a16a42a1a135ad6291405faa127bf941125765b"
-dependencies = [
- "rand",
 ]
 
 [[package]]

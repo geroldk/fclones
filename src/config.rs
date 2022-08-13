@@ -296,13 +296,6 @@ pub struct GroupConfig {
     #[structopt(long, parse(from_os_str), default_value("."))]
     pub base_dir: Path,
 
-
-    #[structopt(long)]
-    pub one_file_system: bool,
-
-
-
-
     /// A list of input paths.
     ///
     /// Accepts files and directories.
