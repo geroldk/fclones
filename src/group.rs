@@ -621,7 +621,15 @@ fn scan_files(ctx: &GroupCtx<'_>) -> Vec<Vec<FileInfo>> {
     let min_size = config.min_size;
     let max_size = config.max_size.unwrap_or(FileLen::MAX);
 
+    let tt: tinyset::Set64<u64> = config.input_paths().into_iter().map(|path|  FileMetadata::new(&path).expect("keine DEV ID").device_id()).collect();
+
+    ctx.log.info(format!("set: {:?} {}", tt, config.one_file_system));
+
+    
+
     let mut walk = Walk::new();
+    walk.one_file_system_devices = tt;
+    walk.one_file_system = config.one_file_system;
     walk.depth = config.depth.unwrap_or(usize::MAX);
     walk.hidden = config.hidden;
     walk.follow_links = config.follow_links;
@@ -635,7 +643,8 @@ fn scan_files(ctx: &GroupCtx<'_>) -> Vec<Vec<FileInfo>> {
             .into_iter()
             .filter(|info| {
                 let l = info.len;
-                l >= min_size && l <= max_size
+                l >= min_size && l <= max_size 
+                && (!config.one_file_system || walk.one_file_system_devices.contains(info.id.device))
             })
             .for_each(|info| {
                 let vec = file_collector.get_or(|| RefCell::new(Vec::new()));
