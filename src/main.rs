@@ -214,7 +214,7 @@ pub fn run_dedupe(op: DedupeOp, config: DedupeConfig, log: &mut Log) -> Result<(
         .map(|g| g.unwrap())
         .inspect(|_| progress.tick());
 
-    let upto = if op == DedupeOp::RefLink {
+    let upto = if op == DedupeOp::RefLink || op == DedupeOp::RefLinkDedup {
         // Can't be sure because any previous deduplications are not
         // visible without calling fs-specific tooling.
         "up to "
@@ -273,7 +273,12 @@ fn main() {
                 log.err("Command \"dedupe\" is unsupported on Windows");
                 exit(1);
             }
-            run_dedupe(DedupeOp::RefLink, config, &mut log)
+            if config.fidrangededupe {
+                run_dedupe(DedupeOp::RefLink, config, &mut log)    
+            }
+            else {
+                run_dedupe(DedupeOp::RefLink, config, &mut log)
+            }
         }
         Command::Move { config, target } => {
             let target = fclones::path::Path::from(target);

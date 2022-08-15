@@ -189,6 +189,12 @@ fn safe_reflink(_src: &PathAndMetadata, _dest: &PathAndMetadata, _log: &Log) -> 
     unreachable!()
 }
 
+
+#[cfg(any(target_os = "linux", target_os = "android"))]
+pub fn reflink_dedupe(src: &PathAndMetadata, dest: &PathAndMetadata, _log: &Log) -> io::Result<()> {
+    btrfs::deduplicate_files_with_source(src.path.to_path_buf(), &[dest.path.to_path_buf()])
+}
+
 #[cfg(not(test))]
 pub mod test {
     pub mod cfg {

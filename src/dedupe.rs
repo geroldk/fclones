@@ -40,6 +40,8 @@ pub enum DedupeOp {
     HardLink,
     /// Reflink redundant files (cp --reflink=always, only some filesystems).
     RefLink,
+    // Dedup with FIDDEDUPRANGE IOCTL
+    RefLinkDedup,
 }
 
 /// Convenience struct for holding a path to a file and its metadata together
@@ -99,6 +101,10 @@ pub enum FsCommand {
         link: PathAndMetadata,
     },
     RefLink {
+        target: Arc<PathAndMetadata>,
+        link: PathAndMetadata,
+    },
+    RefLinkDedup {
         target: Arc<PathAndMetadata>,
         link: PathAndMetadata,
     },
@@ -319,6 +325,13 @@ impl FsCommand {
                 crate::reflink::reflink(target, link, log)?;
                 Ok(link.metadata.len())
             }
+            FsCommand::RefLinkDedup { target, link } => {
+                crate::reflink::reflink_dedupe(target, link, log)?;
+                Ok(link.metadata.len())
+            }
+
+
+
             FsCommand::Move {
                 source,
                 target,
@@ -342,6 +355,7 @@ impl FsCommand {
             | FsCommand::SoftLink { link: file, .. }
             | FsCommand::HardLink { link: file, .. }
             | FsCommand::RefLink { link: file, .. }
+            | FsCommand::RefLinkDedup { link: file, .. }
             | FsCommand::Move { source: file, .. } => file.metadata.len(),
         }
     }
@@ -379,6 +393,9 @@ impl FsCommand {
                 result.push(format!("mv {} {}", link, tmp.quote()));
                 result.push(format!("cp --reflink=always {} {}", target, link));
                 result.push(format!("rm {}", tmp.quote()));
+            }
+            FsCommand::RefLinkDedup { target:_, link:_, .. } => {
+
             }
             FsCommand::Move {
                 source,
@@ -705,6 +722,10 @@ impl PartitionedFileGroup {
                     link: dropped_file,
                 }),
                 DedupeOp::RefLink => commands.push(FsCommand::RefLink {
+                    target: retained_file.clone(),
+                    link: dropped_file,
+                }),
+                DedupeOp::RefLinkDedup => commands.push(FsCommand::RefLinkDedup {
                     target: retained_file.clone(),
                     link: dropped_file,
                 }),

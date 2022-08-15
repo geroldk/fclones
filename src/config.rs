@@ -548,6 +548,9 @@ impl FromStr for Priority {
     setting(AppSettings::ColoredHelp)
 )]
 pub struct DedupeConfig {
+
+    #[structopt(long)]
+    pub fidrangededupe: bool,
     /// Doesn't perform any changes on the file-system, but writes a log of file operations
     /// to the standard output.
     #[structopt(long)]
