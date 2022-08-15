@@ -394,7 +394,8 @@ impl FsCommand {
                 result.push(format!("cp --reflink=always {} {}", target, link));
                 result.push(format!("rm {}", tmp.quote()));
             }
-            FsCommand::RefLinkDedup { target:_, link:_, .. } => {
+            FsCommand::RefLinkDedup { target, link , .. } => {
+                result.push(format!("dedup {} {}", link, target))
 
             }
             FsCommand::Move {

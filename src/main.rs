@@ -274,7 +274,7 @@ fn main() {
                 exit(1);
             }
             if config.fidrangededupe {
-                run_dedupe(DedupeOp::RefLink, config, &mut log)    
+                run_dedupe(DedupeOp::RefLinkDedup, config, &mut log)    
             }
             else {
                 run_dedupe(DedupeOp::RefLink, config, &mut log)
