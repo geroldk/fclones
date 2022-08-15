@@ -942,7 +942,7 @@ where
         .map(|cmd| cmd.execute(should_lock, log))
         .inspect(|res| {
             if let Err(e) = res {
-                log.warn(e);
+                log.warn(format!("{}:?}", e));
             }
         })
         .filter_map(|res| res.ok())
