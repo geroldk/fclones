@@ -36,6 +36,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "anyhow"
+version = "1.0.61"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "508b352bb5c066aac251f6daf6b36eccd03e8a88e8081cd44959ea277a3af9a8"
+
+[[package]]
 name = "arrayvec"
 version = "0.5.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -100,8 +106,9 @@ dependencies = [
 [[package]]
 name = "btrfs"
 version = "1.2.3"
-source = "git+https://github.com/geroldk/rust-btrfs#68399bd5660e5686f391bfaa8df039b7f3dad4fe"
+source = "git+https://github.com/geroldk/rust-btrfs#38f8e6263068013b8a6d6dd1ec95f3948f0199c3"
 dependencies = [
+ "anyhow",
  "crc",
  "flate2",
  "lazy_static",
@@ -373,6 +380,7 @@ dependencies = [
 name = "fclones"
 version = "0.27.0"
 dependencies = [
+ "anyhow",
  "atomic-counter",
  "bincode",
  "btrfs",

@@ -303,7 +303,7 @@ impl FsCommand {
     }
 
     /// Executes the command and returns the number of bytes reclaimed
-    pub fn execute(&self, should_lock: bool, log: &Log) -> io::Result<FileLen> {
+    pub fn execute(&self, should_lock: bool, log: &Log) -> anyhow::Result<FileLen> {
         match self {
             FsCommand::Remove { file } => {
                 let _ = Self::maybe_lock(&file.path, should_lock)?;
